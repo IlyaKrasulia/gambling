@@ -1,118 +1,75 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React, { useEffect } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { PermissionsAndroid, Platform } from 'react-native';
+import { ScreenEnum } from 'utils/types';
+import { NavigationContainer } from '@react-navigation/native';
+import { AppNavigation } from 'navigation/AppNavigation';
+import messaging from '@react-native-firebase/messaging';
+import appsFlyer from 'react-native-appsflyer';
+import { LogLevel, OneSignal } from 'react-native-onesignal';
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+export const App = () => {
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+    };
+    getMessagingToken();
+  }, []);
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+  useEffect(() => {
+    appsFlyer.initSdk(
+      {
+        devKey: 'K2***********99',
+        isDebug: false,
+        appId: '41*****44',
+        onInstallConversionDataListener: true,
+        onDeepLinkListener: true,
+        timeToWaitForATTUserAuthorization: 10
+      },
+      (result) => {
+        console.log(result);
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+  }, []);
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+  useEffect(() => {
+    OneSignal.Debug.setLogLevel(LogLevel.Verbose);
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+    OneSignal.initialize("ONESIGNAL_APP_ID");
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    OneSignal.Notifications.requestPermission(true);
+
+    OneSignal.Notifications.addEventListener('click', (event) => {
+      console.log('OneSignal: notification clicked:', event);
+    });
+  }, []);
+
+  const getMessagingToken = async () => {
+    try {
+      const authStatus = await messaging().requestPermission();
+      const enabled =
+        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+      if (enabled) {
+        const msgToken = await messaging().getToken();
+        console.log(msgToken, ' => msgToken');
+      }
+    } catch (error) {
+      console.log('[firebase_messageToken error]', error);
+    }
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <AppNavigation
+          initialRoute={ScreenEnum.Start}
+        />
+      </NavigationContainer>        
+    </SafeAreaProvider>
   );
-}
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
-
-export default App;
+};
