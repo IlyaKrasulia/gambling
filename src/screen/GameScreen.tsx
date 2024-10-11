@@ -13,7 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Props = NativeStackScreenProps<StackParamList, ScreenEnum.Game>;
 
-export const GameScreen = ({ route }: Props) => {
+export const GameScreen = ({ route, navigation }: Props) => {
 
   const { goBack } = useNavigation();
   const { level } = route.params;
@@ -23,7 +23,7 @@ export const GameScreen = ({ route }: Props) => {
   const animatedValues = useRef<Array<Animated.Value>>([]).current;
   const [shwoGameOverModal, setShwoGameOverModal] = useState(false);
   const [isWin, setWin] = useState(false);
-  const { navigate } = useNavigation();
+  
 
   const initializeGame = () => {
     const cardValues = level.cards;
@@ -149,11 +149,18 @@ export const GameScreen = ({ route }: Props) => {
   }, []);
 
   const nextLevel = () => {
+    setShwoGameOverModal(false);
     if (currentLevel === LEVELS.length) {
-      navigate(ScreenEnum.Levels);
+      navigation.navigate(ScreenEnum.Levels);
       return;
     }
-    navigate(ScreenEnum.Game, { level: LEVELS[currentLevel - 1] });
+    navigation.reset({
+      index: 1,
+      routes: [
+        { name: ScreenEnum.Levels },
+        { name: ScreenEnum.Game, params: { level: LEVELS[currentLevel] } }
+      ]
+    })
   };
 
   useEffect(() => {

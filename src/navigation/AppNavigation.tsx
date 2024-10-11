@@ -17,7 +17,7 @@ const Stack = createStackNavigator<StackParamList>();
 
 export const AppNavigation = ({ initialRoute }: IProps) => {
 
-  useGeo();
+  //useGeo();
 
   return (
       <Stack.Navigator
