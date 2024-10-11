@@ -5,7 +5,7 @@ import { screenHeight, screenWidth } from 'utils/styles';
 
 export const WebViewScreen = () => {
   return (
-    <View style={{ flex: 1, backgroundColor: 'red' }}>
+    <View style={{ flex: 1 }}>
     <WebView
       source={{ uri: 'https://reactnative.dev' }}
       style={{ width: screenWidth, height: screenHeight }}

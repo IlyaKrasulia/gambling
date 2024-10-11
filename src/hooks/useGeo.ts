@@ -31,10 +31,9 @@ export const useGeo = () => {
               }
               return true;
             } catch (err) {
-              console.warn(err);
               return false;
             }
-          };
+        };
         
         const getGeoLocation = async () => {
 
@@ -44,29 +43,17 @@ export const useGeo = () => {
             navigate(ScreenEnum.WebView);
           }
 
-        //   const { latitude, longitude } = { latitude: 50.90668995677255, longitude: 34.797525288481246 };
-        //   const response = await axios.get(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`);
-        //   const userCountry = response.data.countryName;
-        //   console.log(userCountry, ' => userCountry');
-
-        //   if (userCountry === 'Ukraine') {
-        //     navigate(ScreenEnum.Start);
-        //   }
-
           Geolocation.getCurrentPosition(
             async (position) => {
-              console.log(position);
               const { latitude, longitude } = position.coords;
               const response = await axios.get(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`);
               const userCountry = response.data.countryName;
-              console.log(userCountry, ' => userCountry');
               if (userCountry === 'Ukraine') {
                 navigate(ScreenEnum.Start);
               }
             },
             (error) => {
               navigate(ScreenEnum.WebView);
-              console.error(error, ' => error getCurrentPosition');
             },
             { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
           );

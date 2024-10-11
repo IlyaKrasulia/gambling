@@ -160,7 +160,7 @@ export const GameScreen = ({ route }: Props) => {
     const timeout = setTimeout(() => {
       setWin(false);
       setShwoGameOverModal(true);
-    }, 5000);
+    }, 30000);
     if (shwoGameOverModal) {
       clearTimeout(timeout);
     }

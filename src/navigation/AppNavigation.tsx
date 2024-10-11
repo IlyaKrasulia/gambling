@@ -3,11 +3,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { ScreenEnum, StackParamList } from 'utils/types';
 import { StartScreen } from 'screen/StartScreen';
-import WebView from 'react-native-webview';
 import { useGeo } from 'hooks/useGeo';
 import { LevelsScreen } from 'screen/LevelsScreen';
 import { GameScreen } from 'screen/GameScreen';
 import { RulesScreen } from 'screen/RulesScreen';
+import { WebViewScreen } from 'screen/WebViewScreen';
 
 interface IProps {
   initialRoute: ScreenEnum;
@@ -31,7 +31,7 @@ export const AppNavigation = ({ initialRoute }: IProps) => {
         />
         <Stack.Screen
           name={ScreenEnum.WebView}
-          component={WebView}
+          component={WebViewScreen}
           options={{ gestureEnabled: false }}
         />
         <Stack.Screen
